@@ -96,7 +96,7 @@ def create_reservation(request):
         model = load_model(file_path_model, compile=False)
 
         prediction = model.predict(filtered_data)
-        return Response(1)
+        return Response(prediction)
         
 
         
