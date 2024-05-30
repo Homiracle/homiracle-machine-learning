@@ -103,11 +103,11 @@ def create_reservation(request):
         prediction = np.array(model.predict(reshaped_data))
 
 
-        minmaxscaler = MinMaxScaler(feature_range=(0.0, 33.68500029999998))
+        minmaxscaler = MinMaxScaler(feature_range=(4.0, 33.68500029999998))
         prediction = minmaxscaler.fit_transform(prediction.reshape(-1,1))
         output = []
         for i, value in enumerate(prediction):
-            day = (end_date + timedelta(days=i)).strftime("%Y-%m-%d")
+            day = (end_date_transform + timedelta(days=i)).strftime("%Y-%m-%d")
             item = {
                 "day": day,
                 "power": value[0],
