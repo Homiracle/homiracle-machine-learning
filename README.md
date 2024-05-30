@@ -33,3 +33,21 @@ The development server should now be running at http://localhost:8000.
 ```source .venv/bin/activate```
 -   To deactivate the virtual environment, simply run:
 ```deactivate```
+
+# Getting Started on build docker
+Follow the instructions below to set up and run the Django project using Docker.
+
+1. Clone the repository to your local machine:
+```git clone <repository_url>```
+
+2. Cd to server folder
+```cd server```
+
+3. Build the Docker image:
+```docker build -t homiracle_ml .```
+
+4. Run the Docker container:    
+```docker run -d -p 8000:8000 homiracle_ml```
+
+5. Access the Django application:
+Open your web browser and navigate to http://localhost:8000. You should see the Django application running.
