@@ -96,6 +96,8 @@ def create_reservation(request):
         data['day'] = pd.to_datetime(data['day']).dt.date
         filtered_data = data[(data['day'] >= start_date) & (data['day'] <= end_date)]
         print(filtered_data.shape)
+        if(filtered_data.shape[0] < 31 or room_id != "1") :
+            return Response(status=status.HTTP_400_BAD_REQUEST)
         data_pandas_frame = filtered_data.drop(['day', 'time', 'index'], axis=1)
         reshaped_data = np.reshape(data_pandas_frame.values, (1, data_pandas_frame.shape[0], data_pandas_frame.shape[1]))
 
@@ -107,11 +109,11 @@ def create_reservation(request):
         prediction = minmaxscaler.fit_transform(prediction.reshape(-1,1))
         output = []
         for i, value in enumerate(prediction):
-            day = (end_date_transform + timedelta(days=i)).strftime("%Y-%m-%d")
+            day = (end_date_transform + timedelta(days=i+1)).strftime("%Y-%m-%d")
             item = {
                 "day": day,
-                "power": value[0],
                 "water": 0.0,
+                "electric": value[0],
             }
             output.append(item)
         return Response(output)
