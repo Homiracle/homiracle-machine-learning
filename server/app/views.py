@@ -21,11 +21,11 @@ cursor = db.get_cursor()
 
 @api_view(['GET'])
 def create_reservation(request):
-    serializer = ReservationSerializers(data=request.data)
+    serializer = ReservationSerializers(data=request.query_params)
     if serializer.is_valid():
-        user_id = request.data.get('user_id')
-        room_id = request.data.get('room_id')
-        end_date_str = request.data.get('end_date')
+        user_id = request.query_params.get('user_id')
+        room_id = request.query_params.get('room_id')
+        end_date_str = request.query_params.get('end_date')
 
         
         end_date_transform = datetime.strptime(end_date_str, '%Y-%m-%d').date()
@@ -84,11 +84,6 @@ def create_reservation(request):
             'ACORN-U': 1.0,
         }])
 
-        # merge_dataset = pd.DataFrame.merge(consumption_data, weather_data , on='day')
-        # merge_dataset = pd.DataFrame.merge(merge_dataset, household, on='roomRoomId')
-        # merge_dataset['isHoliday'] = merge_dataset['day'].isin(holiday_data['day']).all().astype(float)
-        # merge_dataset
-
         file_path_data = os.path.join(settings.BASE_DIR, 'data', 'comsumption.csv')
         file_path_model = os.path.join(settings.BASE_DIR, 'ml', 'lstm_model.h5')
 
@@ -105,7 +100,7 @@ def create_reservation(request):
         prediction = np.array(model.predict(reshaped_data))
 
 
-        minmaxscaler = MinMaxScaler(feature_range=(4.0, 33.68500029999998))
+        minmaxscaler = MinMaxScaler(feature_range=(0.1, 19.1069999))
         prediction = minmaxscaler.fit_transform(prediction.reshape(-1,1))
         output = []
         for i, value in enumerate(prediction):
