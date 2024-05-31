@@ -96,7 +96,7 @@ def create_reservation(request):
         data_pandas_frame = filtered_data.drop(['day', 'time', 'index'], axis=1)
         reshaped_data = np.reshape(data_pandas_frame.values, (1, data_pandas_frame.shape[0], data_pandas_frame.shape[1]))
 
-        model: Sequential = load_model(file_path_model, compile=False)
+        model = load_model(file_path_model, compile=False)
         prediction = np.array(model.predict(reshaped_data))
 
 
