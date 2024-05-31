@@ -1,12 +1,15 @@
 from django.db import transaction
-from tensorflow.keras.models import load_model, Model, Sequential
+# from keras._tf_keras.keras.saving import load_model
+from keras.models import load_model, Sequential
 import os
+import numpy as np
 from rest_framework.exceptions import APIException
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .serializers import ReservationSerializers
 from datetime import datetime, timedelta
+from sklearn.preprocessing import MinMaxScaler
 import pandas as pd
 from django.conf import settings
 
@@ -28,6 +31,7 @@ def create_reservation(request):
         end_date_transform = datetime.strptime(end_date_str, '%Y-%m-%d').date()
         end_date = end_date_transform - timedelta(days=365*11)
         start_date = end_date - timedelta(days=31)
+        print({end_date, start_date})
 
         query = """
             SELECT *
@@ -91,12 +95,28 @@ def create_reservation(request):
         data = pd.read_csv(file_path_data)
         data['day'] = pd.to_datetime(data['day']).dt.date
         filtered_data = data[(data['day'] >= start_date) & (data['day'] <= end_date)]
-        filtered_data = filtered_data.drop(['day'], axis=1)
-    
-        model = load_model(file_path_model, compile=False)
+        print(filtered_data.shape)
+        if(filtered_data.shape[0] < 31 or room_id != "1") :
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        data_pandas_frame = filtered_data.drop(['day', 'time', 'index'], axis=1)
+        reshaped_data = np.reshape(data_pandas_frame.values, (1, data_pandas_frame.shape[0], data_pandas_frame.shape[1]))
 
-        prediction = model.predict(filtered_data)
-        return Response(1)
+        model: Sequential = load_model(file_path_model, compile=False)
+        prediction = np.array(model.predict(reshaped_data))
+
+
+        minmaxscaler = MinMaxScaler(feature_range=(4.0, 33.68500029999998))
+        prediction = minmaxscaler.fit_transform(prediction.reshape(-1,1))
+        output = []
+        for i, value in enumerate(prediction):
+            day = (end_date_transform + timedelta(days=i+1)).strftime("%Y-%m-%d")
+            item = {
+                "day": day,
+                "water": 0.0,
+                "electric": value[0],
+            }
+            output.append(item)
+        return Response(output)
         
 
         
