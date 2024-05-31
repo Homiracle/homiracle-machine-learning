@@ -7,9 +7,6 @@
 1.  Clone the repository to your local machine:
 ```git clone <repository_url>```
 
-2.  Cd to server foler:
-```cd server```
-
 3.  Create a virtual environment:
 ```python3 -m venv .venv```
 
@@ -39,9 +36,6 @@ Follow the instructions below to set up and run the Django project using Docker.
 
 1. Clone the repository to your local machine:
 ```git clone <repository_url>```
-
-2. Cd to server folder
-```cd server```
 
 3. Build the Docker image:
 ```docker build -t homiracle_ml .```
