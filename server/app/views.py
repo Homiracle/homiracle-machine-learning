@@ -111,7 +111,7 @@ def create_reservation(request):
         for i, value in enumerate(prediction):
             day = (end_date_transform + timedelta(days=i+1)).strftime("%Y-%m-%d")
             item = {
-                "day": day,
+                "date": day,
                 "water": 0.0,
                 "electric": value[0],
             }
